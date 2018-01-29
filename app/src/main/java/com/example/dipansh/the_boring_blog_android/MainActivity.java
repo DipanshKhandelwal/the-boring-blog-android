@@ -28,7 +28,8 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-
+        getSupportActionBar().setDisplayShowTitleEnabled(false);
+        
         list = new ArrayList<>();
         String content = "Lobsja ahisha ashia has amsh amsahis sashis amshias amhais amanljdm dnd ad,nod haod d mdadh ahdad aan ajjojao hsiahsah jdod s dsh hsidsd hisdhs dls dsnosnd sdsnods sdhsb dsmdbisds sdbsdbnsdbs";
         for(int i=0;i<10;i++){
