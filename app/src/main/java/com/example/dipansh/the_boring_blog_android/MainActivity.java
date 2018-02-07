@@ -21,6 +21,7 @@ public class MainActivity extends AppCompatActivity {
     private MediaPlayer media;
     private ProgressBar progessBar;
     private Handler handler;
+    private Runnable position;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -29,7 +30,7 @@ public class MainActivity extends AppCompatActivity {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayShowTitleEnabled(false);
-        
+
         list = new ArrayList<>();
         String content = "Lobsja ahisha ashia has amsh amsahis sashis amshias amhais amanljdm dnd ad,nod haod d mdadh ahdad aan ajjojao hsiahsah jdod s dsh hsidsd hisdhs dls dsnosnd sdsnods sdhsb dsmdbisds sdbsdbnsdbs";
         for(int i=0;i<10;i++){
@@ -40,13 +41,30 @@ public class MainActivity extends AppCompatActivity {
         listView.setAdapter(adapter);
 
         handler = new Handler();
-        MainActivity.this.runOnUiThread(new Runnable() {
+        position = new Runnable() {
             @Override
             public void run() {
-                handler.postDelayed(this, 3000);
-                Toast.makeText(MainActivity.this, ((String.valueOf((listView.getLastVisiblePosition() + listView.getFirstVisiblePosition())/2))), Toast.LENGTH_SHORT).show();
+                String showText ="";
+                handler.postDelayed(this, 4000);
+
+                int first = listView.getFirstVisiblePosition();
+                int last = listView.getLastVisiblePosition();
+
+                if(last - first == 1){
+                    if(first == 0){
+                        showText = "0";
+                    }else if(last == listView.getCount()-1){
+                        showText = String.valueOf(last);
+                    }else{
+                        showText = (String.valueOf((first + last)/2));
+                    }
+                }else{
+                    showText = (String.valueOf((first + last)/2));
+                }
+                Toast.makeText(MainActivity.this, showText, Toast.LENGTH_SHORT).show();
             }
-        });
+        };
+        MainActivity.this.runOnUiThread(position);
     }
 
     @Override
