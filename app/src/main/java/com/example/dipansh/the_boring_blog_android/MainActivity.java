@@ -25,7 +25,7 @@ public class MainActivity extends AppCompatActivity {
 
     private ListView listView;
     private PostAdapter adapter;
-    private ArrayList<Post> list;
+    private ArrayList<Post> posts;
     private MediaPlayer media;
     private ProgressBar progessBar;
     private Handler handler;
@@ -39,14 +39,9 @@ public class MainActivity extends AppCompatActivity {
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayShowTitleEnabled(false);
 
-        list = new ArrayList<>();
-        String content = "Lobsja ahisha ashia has amsh amsahis sashis amshias amhais amanljdm dnd ad,nod haod d mdadh ahdad aan ajjojao hsiahsah jdod s dsh hsidsd hisdhs dls dsnosnd sdsnods sdhsb dsmdbisds sdbsdbnsdbs";
-        for(int i=0;i<10;i++){
-            list.add(new Post("published","title",content,"slug","tech","seotitle","seo descp","author","date","date","link"));
-        }
-        adapter = new PostAdapter(MainActivity.this ,R.layout.post_item,list);
+        posts = new ArrayList<>();
         listView =  findViewById(R.id.listView);
-        listView.setAdapter(adapter);
+        progessBar = findViewById(R.id.progressBar);
 
         GetPosts m = new GetPosts();
         m.execute(REQUEST_URL);
@@ -78,6 +73,12 @@ public class MainActivity extends AppCompatActivity {
         MainActivity.this.runOnUiThread(position);
     }
 
+    public void update(ArrayList<Post> list){
+
+        adapter = new PostAdapter(MainActivity.this ,R.layout.post_item,list);
+        listView.setAdapter(adapter);
+        progessBar.setVisibility(View.INVISIBLE);
+    }
 
     private class GetPosts extends AsyncTask<String , Void , String> {
 
