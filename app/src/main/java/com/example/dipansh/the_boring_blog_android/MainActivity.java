@@ -1,19 +1,27 @@
 package com.example.dipansh.the_boring_blog_android;
 
 import android.media.MediaPlayer;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 
+import java.io.IOException;
+import java.net.URL;
 import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity {
+
+    public static final String LOG_TAG = MainActivity.class.getName();
+    private static final String REQUEST_URL =
+            "http://mukulkyadav.pythonanywhere.com/blog/api/";
 
     private ListView listView;
     private PostAdapter adapter;
@@ -40,6 +48,9 @@ public class MainActivity extends AppCompatActivity {
         listView =  findViewById(R.id.listView);
         listView.setAdapter(adapter);
 
+        GetPosts m = new GetPosts();
+        m.execute(REQUEST_URL);
+
         handler = new Handler();
         position = new Runnable() {
             @Override
@@ -65,6 +76,38 @@ public class MainActivity extends AppCompatActivity {
             }
         };
         MainActivity.this.runOnUiThread(position);
+    }
+
+
+    private class GetPosts extends AsyncTask<String , Void , String> {
+
+        @Override
+        protected String doInBackground(String... params) {
+
+            if (params.length < 1 || params[0] == null) {
+                return null;
+            }
+
+            URL url = QueryUtils.createUrl(params[0]);
+            String jsonResponse = "";
+            try {
+                jsonResponse = QueryUtils.makeHttpRequest(url);
+            } catch (IOException e) {
+                // TODO Handle the IOException
+            }
+
+            return jsonResponse;
+        }
+
+        @Override
+        protected void onPostExecute(String s) {
+            if (s == null) {
+                return;
+            }
+
+            posts = QueryUtils.extractPosts(s);
+            update(posts);
+        }
     }
 
     @Override
