@@ -1,5 +1,6 @@
 package com.example.dipansh.the_boring_blog_android;
 
+import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -23,11 +24,13 @@ public class MainActivity extends AppCompatActivity {
     private static final String REQUEST_URL =
             "http://mukulkyadav.pythonanywhere.com/blog/api/";
 
+    private String urltext;
+    private int lastPost;
     private ListView listView;
     private PostAdapter adapter;
     private ArrayList<Post> posts;
     private MediaPlayer media;
-    private ProgressBar progessBar;
+    private ProgressBar progressBar;
     private Handler handler;
     private Runnable position;
 
@@ -41,16 +44,20 @@ public class MainActivity extends AppCompatActivity {
 
         posts = new ArrayList<>();
         listView =  findViewById(R.id.listView);
-        progessBar = findViewById(R.id.progressBar);
+        progressBar = findViewById(R.id.progressBar);
 
-        GetPosts m = new GetPosts();
-        m.execute(REQUEST_URL);
+        media = new MediaPlayer();
+        media.setAudioStreamType(AudioManager.STREAM_MUSIC);
 
+        GetPosts request = new GetPosts();
+        request.execute(REQUEST_URL);
+
+        lastPost = -5;
         handler = new Handler();
         position = new Runnable() {
             @Override
             public void run() {
-                String showText ="";
+                int presentPost;
                 handler.postDelayed(this, 4000);
 
                 int first = listView.getFirstVisiblePosition();
@@ -58,26 +65,69 @@ public class MainActivity extends AppCompatActivity {
 
                 if(last - first == 1){
                     if(first == 0){
-                        showText = "0";
+                        presentPost = 0;
                     }else if(last == listView.getCount()-1){
-                        showText = String.valueOf(last);
+                        presentPost = last;
                     }else{
-                        showText = (String.valueOf((first + last)/2));
+                        presentPost = (first + last)/2;
                     }
                 }else{
-                    showText = (String.valueOf((first + last)/2));
+                    presentPost = (first + last)/2;
                 }
-                Toast.makeText(MainActivity.this, showText, Toast.LENGTH_SHORT).show();
+                playMusicAt(presentPost);
             }
         };
         MainActivity.this.runOnUiThread(position);
     }
 
-    public void update(ArrayList<Post> list){
+    private void playMusicAt(int presentPost) {
 
+        if(lastPost != presentPost){
+            if(listView.getCount() != 0){
+                lastPost = presentPost;
+                Post post = (Post)listView.getItemAtPosition(presentPost);
+                Toast.makeText(MainActivity.this, String.valueOf(post.getTitle()), Toast.LENGTH_SHORT).show();
+
+                try {
+                    urltext = post.getMusicLink();
+                    media.reset();
+                    media.setDataSource(urltext);
+                    new PrepareMusicPlayer().execute(urltext);
+                    progressBar.setVisibility(View.VISIBLE);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+
+
+            }
+        }
+    }
+
+    private class PrepareMusicPlayer extends AsyncTask<String, Integer, String> {
+        protected String doInBackground(String... strings) {
+            try {
+                media.prepare();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            return null;
+        }
+
+        protected void onProgressUpdate(Integer... progress) {
+            //setProgressPercent(progress[0]);
+        }
+
+        protected void onPostExecute(String string) {
+            media.start();
+            progressBar.setVisibility(View.INVISIBLE);
+            Toast.makeText(MainActivity.this, "Playing", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    public void update(ArrayList<Post> list){
         adapter = new PostAdapter(MainActivity.this ,R.layout.post_item,list);
         listView.setAdapter(adapter);
-        progessBar.setVisibility(View.INVISIBLE);
+        progressBar.setVisibility(View.INVISIBLE);
     }
 
     private class GetPosts extends AsyncTask<String , Void , String> {
@@ -142,7 +192,18 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onPause() {
         handler.removeCallbacks(position);
+        if(media!=null){
+            media.release();
+        }
         super.onPause();
+    }
+
+    @Override
+    protected void onStop() {
+        if(media!=null){
+            media.release();
+        }
+        super.onStop();
     }
 
 }
