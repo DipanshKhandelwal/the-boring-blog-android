@@ -58,7 +58,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void run() {
                 int presentPost;
-                handler.postDelayed(this, 4000);
+                handler.postDelayed(this, 3000);
 
                 int first = listView.getFirstVisiblePosition();
                 int last = listView.getLastVisiblePosition();
@@ -185,7 +185,9 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     protected void onResume() {
-        handler.postDelayed(position, 4000);
+        media = new MediaPlayer();
+        media.setAudioStreamType(AudioManager.STREAM_MUSIC);
+        handler.postDelayed(position, 3000);
         super.onResume();
     }
 
@@ -202,6 +204,7 @@ public class MainActivity extends AppCompatActivity {
     protected void onStop() {
         if(media!=null){
             media.release();
+            media = null;
         }
         super.onStop();
     }
