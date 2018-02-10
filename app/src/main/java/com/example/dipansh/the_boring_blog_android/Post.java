@@ -1,10 +1,12 @@
 package com.example.dipansh.the_boring_blog_android;
 
+import java.io.Serializable;
+
 /**
  * Created by dipansh on 19/1/18.
  */
 
-public class Post {
+public class Post implements Serializable{
 
     private int id;
     private String title;
