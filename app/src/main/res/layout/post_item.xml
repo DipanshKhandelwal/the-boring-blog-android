@@ -82,13 +82,13 @@
                     app:srcCompat="@android:drawable/ic_menu_share" />
 
                 <TextView
-                    android:id="@+id/textView5"
+                    android:id="@+id/readmore"
                     android:layout_width="0dp"
                     android:layout_height="35dp"
                     android:layout_weight="10"
                     android:text="Read More ..."
                     android:textColor="@color/colorPrimaryDark"
-                    android:padding="5dp"/>
+                    android:padding="5dp" />
             </LinearLayout>
 
         </LinearLayout>
