@@ -22,7 +22,7 @@
         </activity>
         <activity
             android:name=".ScrollingActivity"
-            android:label="@string/title_activity_scrolling"
+            android:label="Scrolling Activity"
             android:theme="@style/AppTheme.NoActionBar"/>
     </application>
 
