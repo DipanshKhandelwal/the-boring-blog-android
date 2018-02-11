@@ -18,7 +18,10 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.nio.charset.Charset;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 
 import static com.example.dipansh.the_boring_blog_android.MainActivity.LOG_TAG;
 
@@ -127,7 +130,9 @@ public final class QueryUtils {
                 int category = post.getInt("category");
                 int author = post.getInt("author");
 
-                Post e = new Post(id, title, slug, content, seoTitle, seoDescription, publishedDateTime, createdDateTime, status, musicLink, category, author);
+                String dateString = getDate(publishedDateTime);
+
+                Post e = new Post(id, title, slug, content, seoTitle, seoDescription, dateString, createdDateTime, status, musicLink, category, author);
                 postlist.add(e);
 
             }
@@ -139,6 +144,19 @@ public final class QueryUtils {
         }
         // Return the list of posts
         return postlist;
+    }
+
+    private static String getDate(String publishedDateTime) {
+        Date dateD = new Date();
+        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
+        try {
+            dateD = format.parse(publishedDateTime);
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+
+        SimpleDateFormat dateFormat = new SimpleDateFormat("HH:mm dd-MM-yyyy");
+        return dateFormat.format(dateD);
     }
 
 }
